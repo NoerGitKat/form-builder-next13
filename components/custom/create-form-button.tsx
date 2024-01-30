@@ -11,6 +11,7 @@ import {
     DialogFooter,
 } from "../ui/dialog";
 import { ImSpinner2 } from "react-icons/im";
+import { BsFileEarmarkPlus } from "react-icons/bs";
 import { Button } from "../ui/button";
 import {
     FormField,
@@ -57,7 +58,13 @@ export default function CreateFormButton() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button>Create new form</Button>
+                <Button
+                    variant="outline"
+                    className="group border border-primary/20 h-[190px] items-center justify-center flex flex-col hover:border-primary hover:cursor-pointer border-dashed gap-4"
+                >
+                    <BsFileEarmarkPlus className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
+                    <span>Create new form</span>
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
