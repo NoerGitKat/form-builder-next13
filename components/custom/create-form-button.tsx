@@ -23,16 +23,10 @@ import {
 import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
-
-const formSchema = z.object({
-    name: z.string().min(4),
-    description: z.string().optional(),
-});
-
-type formSchemaType = z.infer<typeof formSchema>;
+import { formSchema, formSchemaType } from "@/schemas";
+import { createForm } from "@/actions/forms";
 
 export default function CreateFormButton() {
     const form = useForm<formSchemaType>({
@@ -43,10 +37,14 @@ export default function CreateFormButton() {
         },
     });
 
-    const handleFormData = (values: formSchemaType) => {
-        console.log("values are", values);
-
+    const handleFormData = async (values: formSchemaType) => {
         try {
+            const formId = await createForm(values);
+            toast({
+                title: "Success",
+                description: `Form with ID ${formId} created successfully!`,
+                variant: "default",
+            });
         } catch (error) {
             toast({
                 title: "Error",
@@ -71,7 +69,7 @@ export default function CreateFormButton() {
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(handleFormData)}
-                        className="space-y-2"
+                        className="space-y-4"
                     >
                         <FormField
                             control={form.control}
