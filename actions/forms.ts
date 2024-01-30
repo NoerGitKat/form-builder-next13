@@ -70,3 +70,19 @@ export async function getForms() {
 
     return forms || [];
 }
+
+export async function getFormById(id: number) {
+    const user = await currentUser();
+    if (!user) throw new UserNotFoundError();
+
+    const form = prisma.form.findUnique({
+        where: {
+            userId: user.id,
+            id,
+        },
+    });
+
+    if (!form) throw new Error("Could not find form.");
+
+    return form;
+}
