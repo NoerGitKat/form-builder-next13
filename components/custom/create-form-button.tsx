@@ -27,9 +27,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
 import { formSchema, formSchemaType } from "@/schemas";
-import { createForm } from "@/actions/forms";
+import { createForm } from "@/actions";
+import { useRouter } from "next/navigation";
 
 export default function CreateFormButton() {
+    const { push } = useRouter();
     const form = useForm<formSchemaType>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -46,6 +48,7 @@ export default function CreateFormButton() {
                 description: `Form with ID ${formId} created successfully!`,
                 variant: "default",
             });
+            push(`/builder/${formId}`);
         } catch (error) {
             toast({
                 title: "Error",
@@ -60,7 +63,7 @@ export default function CreateFormButton() {
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="group border border-primary/20 h-[190px] items-center justify-center flex flex-col hover:border-primary hover:cursor-pointer border-dashed gap-4"
+                    className="group border border-primary/20 h-[210px] items-center justify-center flex flex-col hover:border-primary hover:cursor-pointer border-dashed gap-4"
                 >
                     <BsFileEarmarkPlus className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
                     <span>Create new form</span>
