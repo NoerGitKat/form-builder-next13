@@ -9,10 +9,10 @@ import {
     DialogTrigger,
     DialogDescription,
     DialogFooter,
-} from "../ui/dialog";
+} from "../../ui/dialog";
 import { ImSpinner2 } from "react-icons/im";
 import { BsFileEarmarkPlus } from "react-icons/bs";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import {
     FormField,
     Form,
@@ -20,12 +20,12 @@ import {
     FormLabel,
     FormControl,
     FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "../../ui/form";
+import { Input } from "../../ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Textarea } from "../ui/textarea";
-import { toast } from "../ui/use-toast";
+import { Textarea } from "../../ui/textarea";
+import { toast } from "../../ui/use-toast";
 import { formSchema, formSchemaType } from "@/schemas";
 import { createForm } from "@/actions";
 import { useRouter } from "next/navigation";

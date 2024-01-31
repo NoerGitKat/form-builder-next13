@@ -3,7 +3,7 @@ import {
     FormCardSkeleton,
     FormCards,
 } from "@/components/custom/cards/forms-card";
-import CreateFormButton from "@/components/custom/create-form-button";
+import CreateFormButton from "@/components/custom/forms/create-form-button";
 import { Separator } from "@/components/ui/separator";
 import { Suspense } from "react";
 
