@@ -3,14 +3,20 @@
 import { cn } from "@/lib/utils";
 import { nanoid } from "nanoid";
 import DesignerSidebar from "./sidebar";
-import { DragEndEvent, useDndMonitor, useDroppable } from "@dnd-kit/core";
+import {
+    DragEndEvent,
+    useDndMonitor,
+    useDraggable,
+    useDroppable,
+} from "@dnd-kit/core";
+import { BiSolidTrash } from "react-icons/bi";
 import { useDesigner } from "@/hooks";
 import { ElementsType, FormElementInstance, FormElements } from "./elements";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 function Designer() {
     const { formElements, addElement } = useDesigner();
-
-    console.log("formElements", formElements);
 
     const droppable = useDroppable({
         id: "designer-drop-area",
@@ -73,9 +79,92 @@ function Designer() {
 }
 
 function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
+    const [mouseIsOver, setMouseIsOver] = useState<boolean>(false);
+    const { removeElement } = useDesigner();
     const DesignerElement = FormElements[element.type].designerComponent;
 
-    return <DesignerElement element={element} />;
+    const topDropzone = useDroppable({
+        id: element.id + "-top",
+        data: {
+            type: element.type,
+            elementId: element.id,
+            isTopDropzone: true,
+        },
+    });
+
+    const bottomDropzone = useDroppable({
+        id: element.id + "-bottom",
+        data: {
+            type: element.type,
+            elementId: element.id,
+            isBottomDropzone: true,
+        },
+    });
+
+    const draggable = useDraggable({
+        id: element.id + "-drag-handler",
+        data: {
+            type: element.type,
+            elementId: element.id,
+            isDesignerElement: true,
+        },
+    });
+
+    return (
+        <section
+            className="relative h-[120px] flex flex-col text-foreground hover:cursor-pointer rounded-md ring-1 ring-accent ring-inset"
+            ref={draggable.setNodeRef}
+            {...draggable.listeners}
+            {...draggable.attributes}
+            onMouseEnter={() => {
+                setMouseIsOver(true);
+            }}
+            onMouseLeave={() => {
+                setMouseIsOver(false);
+            }}
+        >
+            {mouseIsOver && (
+                <section>
+                    <div className="absolute right-0 h-full z-10">
+                        <Button
+                            className="flex justify-center h-full border rounded-md rounded-l-none bg-red-500"
+                            variant="outline"
+                            onClick={() => removeElement(element.id)}
+                        >
+                            <BiSolidTrash className="h-6 w-6" />
+                        </Button>
+                    </div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse">
+                        <p className="text-muted-foreground text-sm">
+                            Click for properties or drag to move
+                        </p>
+                    </div>
+                </section>
+            )}
+            <div
+                ref={topDropzone.setNodeRef}
+                className={cn(
+                    "absolute w-full h-1/2 rounded-t-md",
+                    topDropzone.isOver && "border-t-8 border-solid",
+                )}
+            ></div>
+            <div
+                className={cn(
+                    "flex w-full h-full items-center rounded-md bg-accent/40 px-4 py-2 pointer-events-none opacity-100 transition-all",
+                    mouseIsOver && "opacity-30",
+                )}
+            >
+                <DesignerElement element={element} />
+            </div>
+            <div
+                ref={bottomDropzone.setNodeRef}
+                className={cn(
+                    "absolute  w-full bottom-0 h-1/2 rounded-b-md",
+                    bottomDropzone.isOver && "border-b-8 border-solid",
+                )}
+            ></div>
+        </section>
+    );
 }
 
 export default Designer;
