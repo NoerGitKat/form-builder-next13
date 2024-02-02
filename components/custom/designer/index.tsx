@@ -16,7 +16,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 function Designer() {
-    const { formElements, addElement } = useDesigner();
+    const { formElements, addElement, selectedElement, setSelectedElement } =
+        useDesigner();
 
     const droppable = useDroppable({
         id: "designer-drop-area",
@@ -44,7 +45,12 @@ function Designer() {
 
     return (
         <section className="flex w-full h-full">
-            <div className="p-4 w-full">
+            <div
+                className="p-4 w-full"
+                onClick={() => {
+                    if (selectedElement) setSelectedElement(null);
+                }}
+            >
                 <div
                     ref={droppable.setNodeRef}
                     className={cn(
@@ -80,7 +86,8 @@ function Designer() {
 
 function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
     const [mouseIsOver, setMouseIsOver] = useState<boolean>(false);
-    const { removeElement } = useDesigner();
+    const { removeElement, selectedElement, setSelectedElement } =
+        useDesigner();
     const DesignerElement = FormElements[element.type].designerComponent;
 
     const topDropzone = useDroppable({
@@ -126,6 +133,10 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             onMouseLeave={() => {
                 setMouseIsOver(false);
             }}
+            onClick={(event) => {
+                event.stopPropagation();
+                setSelectedElement(element);
+            }}
         >
             {mouseIsOver && (
                 <section>
@@ -133,7 +144,10 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
                         <Button
                             className="flex justify-center h-full border rounded-md rounded-l-none bg-red-500"
                             variant="outline"
-                            onClick={() => removeElement(element.id)}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                removeElement(element.id);
+                            }}
                         >
                             <BiSolidTrash className="h-6 w-6" />
                         </Button>

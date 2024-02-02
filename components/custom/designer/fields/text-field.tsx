@@ -25,27 +25,43 @@ export const TextFieldFormElement: FormElement = {
         icon: MdTextFields,
         label: "Text Field",
     },
-    designerComponent: ({
-        element: {
-            extraAttributes: { label, required, placeholder, helperText },
-        },
-    }: {
-        element: FormElementInstance;
-    }) => {
-        return (
-            <li className="flex flex-col gap-2 w-full">
-                <Label>
-                    {label} {required && "*"}
-                </Label>
-                <Input readOnly disabled placeholder={placeholder} />
-                {helperText && (
-                    <p className="text-muted-foreground text-[0.8rem]">
-                        {helperText}
-                    </p>
-                )}
-            </li>
-        );
-    },
-    formComponent: () => <div>Deisnger</div>,
-    propertiesComponent: () => <div>Deisnger</div>,
+    designerComponent: DesignerComponent,
+    formComponent: () => <div>Designer</div>,
+    propertiesComponent: PropertiesComponent,
 };
+
+function DesignerComponent({
+    element: {
+        extraAttributes: { label, required, placeholder, helperText },
+    },
+}: {
+    element: FormElementInstance;
+}) {
+    return (
+        <li className="flex flex-col gap-2 w-full">
+            <Label>
+                {label} {required && "*"}
+            </Label>
+            <Input readOnly disabled placeholder={placeholder} />
+            {helperText && (
+                <p className="text-muted-foreground text-[0.8rem]">
+                    {helperText}
+                </p>
+            )}
+        </li>
+    );
+}
+
+function PropertiesComponent({
+    element: {
+        extraAttributes: { label, required, placeholder, helperText },
+    },
+}: {
+    element: FormElementInstance;
+}) {
+    return (
+        <div>
+            Properties for <b>{label}</b>
+        </div>
+    );
+}
