@@ -15,6 +15,7 @@ export type DesignerContextType = {
     removeElement: (id: string) => void;
     selectedElement: FormElementInstance | null;
     setSelectedElement: Dispatch<SetStateAction<FormElementInstance | null>>;
+    updateElement: (id: string, element: FormElementInstance) => void;
 };
 
 export const designerContext = createContext<DesignerContextType | null>(null);
@@ -35,6 +36,15 @@ export function DesignerContextProvider({ children }: { children: ReactNode }) {
         });
     };
 
+    const updateElement = (id: string, element: FormElementInstance) => {
+        setFormElements((prev) => {
+            const updatedElements = [...prev];
+            const elIndex = updatedElements.findIndex((el) => el.id === id);
+            updatedElements[elIndex] = element;
+            return updatedElements;
+        });
+    };
+
     return (
         <designerContext.Provider
             value={{
@@ -43,6 +53,7 @@ export function DesignerContextProvider({ children }: { children: ReactNode }) {
                 removeElement,
                 selectedElement,
                 setSelectedElement,
+                updateElement,
             }}
         >
             {children}
