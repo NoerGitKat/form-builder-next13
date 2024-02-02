@@ -52,7 +52,7 @@ function Designer() {
                         droppable.isOver && "ring-2 ring-primary/20",
                     )}
                 >
-                    {droppable.isOver && (
+                    {droppable.isOver && formElements.length === 0 && (
                         <div className="p-4 w-full">
                             <div className="h-[120px] rounded-md bg-primary/20"></div>
                         </div>
@@ -109,6 +109,10 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             isDesignerElement: true,
         },
     });
+
+    if (draggable.isDragging) {
+        return null;
+    }
 
     return (
         <section

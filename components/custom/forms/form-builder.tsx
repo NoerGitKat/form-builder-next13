@@ -1,6 +1,12 @@
 "use client";
 
-import { DndContext } from "@dnd-kit/core";
+import {
+    DndContext,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
 import Designer from "../designer";
 import PreviewDialogBtn from "./buttons/preview-form";
 import PublishFormBtn from "./buttons/publish-form";
@@ -13,8 +19,23 @@ export default function FormBuilder({
 }: {
     form: Form;
 }) {
+    const mouseSensor = useSensor(MouseSensor, {
+        activationConstraint: {
+            distance: 10,
+        },
+    });
+
+    const touchSensor = useSensor(TouchSensor, {
+        activationConstraint: {
+            delay: 300,
+            tolerance: 5,
+        },
+    });
+
+    const sensors = useSensors(mouseSensor);
+
     return (
-        <DndContext>
+        <DndContext sensors={sensors}>
             <main className="flex flex-col w-full">
                 <nav className="flex justify-between border-b-2 p-4 gap-3 items-center">
                     <h2 className="truncate font-medium">
@@ -24,7 +45,7 @@ export default function FormBuilder({
                         {name}
                     </h2>
                     <div className="flex items-center gap-2">
-                        {/* <PreviewDialogBtn /> */}
+                        <PreviewDialogBtn />
                         {!published && (
                             <>
                                 <SaveFormBtn formId={id} />

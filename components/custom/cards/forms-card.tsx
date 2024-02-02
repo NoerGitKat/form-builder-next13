@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 
 export function FormCardSkeleton() {
     return (
-        <Skeleton className="border-2 border-primary-2/20 h-[190px" w-full />
+        <Skeleton className="border-2 border-primary-2/20 h-[190px] w-full" />
     );
 }
 

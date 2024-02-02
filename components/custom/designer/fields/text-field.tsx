@@ -39,7 +39,9 @@ export const TextFieldFormElement: FormElement = {
                 </Label>
                 <Input readOnly disabled placeholder={placeholder} />
                 {helperText && (
-                    <p className="text-muted-foreground text-[0.8rem]"></p>
+                    <p className="text-muted-foreground text-[0.8rem]">
+                        {helperText}
+                    </p>
                 )}
             </li>
         );
