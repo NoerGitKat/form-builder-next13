@@ -50,7 +50,7 @@ export const TextFieldFormElement: FormElement = {
         label: "Text Field",
     },
     designerComponent: DesignerComponent,
-    formComponent: () => <div>Designer</div>,
+    formComponent: FormComponent,
     propertiesComponent: PropertiesComponent,
 };
 
@@ -214,5 +214,26 @@ function PropertiesComponent({ element }: { element: FormElementInstance }) {
                 />
             </form>
         </Form>
+    );
+}
+
+function FormComponent({ element }: { element: FormElementInstance }) {
+    const { label, required, placeholder, helperText } =
+        element.extraAttributes;
+    const id = `checkbox-${element.id}`;
+    return (
+        <div className="flex items-top space-x-2">
+            <div className="grid gap-1.5 leading-none">
+                <Label htmlFor={id}>
+                    {label}
+                    {required && "*"}
+                </Label>
+                {helperText && (
+                    <p className={"text-muted-foreground text-[0.8rem]"}>
+                        {helperText}
+                    </p>
+                )}
+            </div>
+        </div>
     );
 }
