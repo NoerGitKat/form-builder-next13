@@ -16,8 +16,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 function Designer() {
-    const { formElements, addElement, selectedElement, setSelectedElement } =
-        useDesigner();
+    const {
+        formElements,
+        addElement,
+        selectedElement,
+        setSelectedElement,
+        removeElement,
+    } = useDesigner();
 
     const droppable = useDroppable({
         id: "designer-drop-area",
@@ -30,15 +35,80 @@ function Designer() {
         onDragEnd: ({ active, over }: DragEndEvent) => {
             if (!active || !over) return;
 
-            const isSidebarBtnElement =
+            const isDesignerBtnElement =
                 active.data?.current?.isDesignerBtnElement;
+            const isDesignerDropArea = over.data?.current?.isDesignerDropArea;
+            const isDroppingOverTopHalf = over.data?.current?.isTopDropzone;
+            const isDroppingOverBottomHalf =
+                over.data?.current?.isBottomDropzone;
+            const isActiveDropping = active.data?.current?.isDesignerElement;
 
-            if (isSidebarBtnElement) {
+            // First scenario: Drag new element into dropzone
+            if (isDesignerBtnElement && isDesignerDropArea) {
                 const type = active.data?.current?.type;
                 const newElement =
                     FormElements[type as ElementsType].construct(nanoid());
 
-                addElement(0, newElement);
+                addElement(formElements.length, newElement);
+            }
+
+            // Second scenario: Drag new element above/below existing element
+            if (
+                (!isActiveDropping && isDroppingOverTopHalf) ||
+                (!isActiveDropping && isDroppingOverBottomHalf)
+            ) {
+                const currentIndex = formElements.findIndex(
+                    (el) => el.id === over.data?.current?.elementId,
+                );
+
+                const type = active.data?.current?.type;
+                const newElement =
+                    FormElements[type as ElementsType].construct(nanoid());
+
+                addElement(
+                    isDroppingOverBottomHalf ? currentIndex + 1 : currentIndex,
+                    newElement,
+                );
+            }
+
+            // 3. Third scenario: Drag existing element above/below existing element
+            if (
+                (isActiveDropping && isDroppingOverTopHalf) ||
+                (isActiveDropping && isDroppingOverBottomHalf)
+            ) {
+                const activeId = active.data?.current?.elementId;
+                const hoveredId = over.data?.current?.elementId;
+                console.log("activeId", activeId);
+                console.log("hoveredId", hoveredId);
+                console.log("formElements", formElements);
+
+                const activeElementIndex = formElements.findIndex(
+                    (el) => el.id === activeId,
+                );
+                const hoveredElementIndex = formElements.findIndex(
+                    (el) => el.id === hoveredId,
+                );
+
+                console.log("activeElementIndex", activeElementIndex);
+                console.log("hoveredElementIndex", hoveredElementIndex);
+
+                if (activeElementIndex === -1 || hoveredElementIndex === -1) {
+                    throw new Error("Can't find element");
+                }
+
+                const tempActiveElement = {
+                    ...formElements[activeElementIndex],
+                };
+
+                removeElement(activeId);
+                addElement(
+                    isDroppingOverTopHalf
+                        ? hoveredElementIndex
+                        : hoveredElementIndex + 1,
+                    tempActiveElement,
+                );
+
+                console.log("formElements", formElements);
             }
         },
     });
@@ -55,7 +125,7 @@ function Designer() {
                     ref={droppable.setNodeRef}
                     className={cn(
                         "bg-background max-w-[920px] h-full m-auto rounded-xl flex flex-col flex-grow items-center justify-start flex-1 overflow-y-auto",
-                        droppable.isOver && "ring-2 ring-primary/20",
+                        droppable.isOver && "ring-2 ring-primary ring-inset",
                     )}
                 >
                     {droppable.isOver && formElements.length === 0 && (
@@ -86,8 +156,7 @@ function Designer() {
 
 function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
     const [mouseIsOver, setMouseIsOver] = useState<boolean>(false);
-    const { removeElement, selectedElement, setSelectedElement } =
-        useDesigner();
+    const { removeElement, setSelectedElement } = useDesigner();
     const DesignerElement = FormElements[element.type].designerComponent;
 
     const topDropzone = useDroppable({
@@ -127,15 +196,15 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
             ref={draggable.setNodeRef}
             {...draggable.listeners}
             {...draggable.attributes}
+            onClick={(event) => {
+                event.stopPropagation();
+                setSelectedElement(element);
+            }}
             onMouseEnter={() => {
                 setMouseIsOver(true);
             }}
             onMouseLeave={() => {
                 setMouseIsOver(false);
-            }}
-            onClick={(event) => {
-                event.stopPropagation();
-                setSelectedElement(element);
             }}
         >
             {mouseIsOver && (

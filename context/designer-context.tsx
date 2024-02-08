@@ -26,14 +26,15 @@ export function DesignerContextProvider({ children }: { children: ReactNode }) {
         useState<FormElementInstance | null>(null);
 
     const addElement = (index: number, element: FormElementInstance) => {
-        setFormElements([...formElements, element]);
+        setFormElements((prev) => {
+            const newElements = [...prev];
+            newElements.splice(index, 0, element);
+            return newElements;
+        });
     };
 
     const removeElement = (id: string) => {
-        setFormElements((prev) => {
-            const updatedElements = prev.filter((el) => el.id !== id);
-            return updatedElements;
-        });
+        setFormElements((prev) => prev.filter((el) => el.id !== id));
     };
 
     const updateElement = (id: string, element: FormElementInstance) => {
